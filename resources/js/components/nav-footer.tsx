@@ -1,7 +1,11 @@
 import { Icon } from '@/components/icon';
 import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import { useAppearance } from '@/hooks/use-appearance';
 import { type NavItem } from '@/types';
-import { type ComponentPropsWithoutRef } from 'react';
+import { IconBrightness } from '@tabler/icons-react';
+import { useEffect, useState, type ComponentPropsWithoutRef } from 'react';
+import { Skeleton } from './ui/skeleton';
+import { Switch } from './ui/switch';
 
 export function NavFooter({
     items,
@@ -10,6 +14,12 @@ export function NavFooter({
 }: ComponentPropsWithoutRef<typeof SidebarGroup> & {
     items: NavItem[];
 }) {
+    const { appearance, updateAppearance } = useAppearance();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
     return (
         <SidebarGroup {...props} className={`group-data-[collapsible=icon]:p-0 ${className || ''}`}>
             <SidebarGroupContent>
@@ -27,6 +37,23 @@ export function NavFooter({
                             </SidebarMenuButton>
                         </SidebarMenuItem>
                     ))}
+                    <SidebarMenuItem className="group-data-[collapsible=icon]:hidden">
+                        <SidebarMenuButton asChild>
+                            <label>
+                                <IconBrightness />
+                                <span>Dark Mode</span>
+                                {mounted ? (
+                                    <Switch
+                                        className="ml-auto"
+                                        checked={appearance !== 'light'}
+                                        onCheckedChange={() => updateAppearance(appearance === 'dark' ? 'light' : 'dark')}
+                                    />
+                                ) : (
+                                    <Skeleton className="ml-auto h-4 w-8 rounded-full" />
+                                )}
+                            </label>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarGroupContent>
         </SidebarGroup>
