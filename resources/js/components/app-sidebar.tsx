@@ -3,8 +3,8 @@ import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
-import { AudioWaveform, BookOpen, Command, Folder, GalleryVerticalEnd, LayoutGrid } from 'lucide-react';
-import { OrganizationSwitcher } from './organization-switch';
+import { BookOpen, Folder, LayoutGrid } from 'lucide-react';
+import { TeamSwitcher } from './team-switcher';
 
 const mainNavItems: NavItem[] = [
     {
@@ -32,29 +32,11 @@ const footerNavItems: NavItem[] = [
     },
 ];
 
-const organizations = [
-    {
-        name: 'Acme Inc',
-        logo: GalleryVerticalEnd,
-        plan: 'Enterprise',
-    },
-    {
-        name: 'Acme Corp.',
-        logo: AudioWaveform,
-        plan: 'Startup',
-    },
-    {
-        name: 'Evil Corp.',
-        logo: Command,
-        plan: 'Free',
-    },
-];
-
 export function AppSidebar() {
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
-                <OrganizationSwitcher organizations={organizations} />
+                <TeamSwitcher />
             </SidebarHeader>
 
             <SidebarContent>
