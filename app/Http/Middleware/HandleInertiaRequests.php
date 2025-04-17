@@ -46,11 +46,11 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
                 'teams' => [
-                    'all' => $request->user()->rolesTeams()->select('id', 'name')->get(),
-                    'current' => $request->user()->currentTeam()
+                    'all' => $request->user()?->rolesTeams()->select('id', 'name')->get(),
+                    'current' => $request->user()?->currentTeam()
                 ],
             ],
-            'ziggy' => fn (): array => [
+            'ziggy' => fn(): array => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
