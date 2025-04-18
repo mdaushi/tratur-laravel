@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Teams\NewTeamController;
-use App\Http\Controllers\Teams\TeamController;
 use Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -25,12 +24,9 @@ Route::prefix('/dashboard')->middleware(['auth', 'verified', 'hasTeam'])->group(
     })->name('dashboard');
 
     Route::resource('products', ProductController::class);
-
-    Route::prefix('teams')->group(function(){
-        Route::get('switch/{teamId}', [TeamController::class, 'switchTeam'])->name('teams.switch');
-    });
 });
 
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
+require __DIR__ . '/teams.php';

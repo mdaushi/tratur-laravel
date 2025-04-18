@@ -3,7 +3,7 @@ import type { Config } from 'ziggy-js';
 
 export interface Auth {
     user: User;
-    teams: { all: Team[]; current: Team };
+    teams: { all: TeamBase[]; current: TeamBase };
 }
 
 export interface BreadcrumbItem {
@@ -43,8 +43,32 @@ export interface User {
     [key: string]: unknown; // This allows for additional properties...
 }
 
-export interface Team {
+export interface TeamBase {
     id: number;
     name: string;
     description: string;
+}
+
+export interface Team extends TeamBase {
+    memberCount: number;
+    roleCount: number;
+    members: Member[];
+    availableRoles: Role[];
+}
+
+export interface Role {
+    id: string;
+    name: string;
+    description: string;
+    permissions: string[];
+    userCount: number;
+}
+
+export interface Member {
+    id: string;
+    name: string;
+    email: string;
+    avatar?: string;
+    role: string;
+    status: 'Active' | 'Pending' | 'Suspended';
 }
