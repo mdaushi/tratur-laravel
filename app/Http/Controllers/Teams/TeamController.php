@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Teams;
 
 use App\Http\Controllers\Controller;
 use App\Models\Role;
+use App\Models\Team;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -52,6 +53,7 @@ class TeamController extends Controller
 
 
                     return [
+                        'hashid' => $team->hashid,
                         'id' => $team->id,
                         'name' => $team->name,
                         'description' => $team->description,
@@ -63,6 +65,11 @@ class TeamController extends Controller
                 });
             })
         ]);
+    }
+
+    public function show(Team $team)
+    {
+        return to_route("teams.general.edit", [$team->hashid]);
     }
 
     public function switchTeam(Request $request, $teamId)

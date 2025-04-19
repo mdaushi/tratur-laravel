@@ -13,6 +13,7 @@
         "inertiajs/inertia-laravel": "^2.0",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
+        "mtvs/eloquent-hashids": "^3.6",
         "santigarcor/laratrust": "^8.4",
         "tightenco/ziggy": "^2.4"
     },

@@ -1,13 +1,16 @@
+import { Team } from '@/types';
+import { Link } from '@inertiajs/react';
 import { Row } from '@tanstack/react-table';
 import { MoreHorizontal } from 'lucide-react';
 import { Button } from '../ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu';
 
-interface DataTableRowActionsProps<TData> {
+interface DataTableRowActionsProps<TData extends Team> {
     row: Row<TData>;
 }
 
-export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TData>) {
+export function DataTableRowActions<TData extends Team>({ row }: DataTableRowActionsProps<TData>) {
+    const team = row.original;
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -17,7 +20,9 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[160px]">
-                <DropdownMenuItem>Settings</DropdownMenuItem>
+                <Link href={route('teams.show', team.hashid)}>
+                    <DropdownMenuItem>Settings</DropdownMenuItem>
+                </Link>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
             </DropdownMenuContent>

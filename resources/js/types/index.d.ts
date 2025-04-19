@@ -45,6 +45,7 @@ export interface User {
 
 export interface TeamBase {
     id: number;
+    hashid: string;
     name: string;
     description: string;
 }
