@@ -1,5 +1,6 @@
 import { Heading } from '@/components/heading';
 import { TabNavigation } from '@/components/tab-navigation';
+import { DeleteConfirmation } from '@/components/teams/delete-confirmation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -9,8 +10,8 @@ import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem, Team } from '@/types';
 import { Head } from '@inertiajs/react';
 import { useForm } from 'laravel-precognition-react-inertia';
-import { Loader2 } from 'lucide-react';
-import { FormEvent } from 'react';
+import { AlertTriangle, Loader2 } from 'lucide-react';
+import { FormEvent, useState } from 'react';
 
 interface GeneralProps {
     team: Team;
@@ -51,6 +52,8 @@ export default function General({ team }: GeneralProps) {
         form.reset();
         form.clearErrors();
     };
+
+    const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -95,6 +98,40 @@ export default function General({ team }: GeneralProps) {
                         </CardFooter>
                     </form>
                 </Card>
+
+                <Card className="border-1 border-red-400">
+                    <CardHeader>
+                        <CardTitle>DANGER ZONE</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="flex items-start gap-4">
+                            <AlertTriangle className="text-destructive h-5 w-5" />
+                            <div className="space-y-2">
+                                <p className="text-foreground text-sm">Deleting this team will also remove its projects</p>
+                                <p className="text-muted-foreground text-sm">
+                                    Make sure you have made a backup of your projects if you want to keep your data
+                                </p>
+                                <div className="pt-2">
+                                    <Button
+                                        variant="destructive"
+                                        onClick={() => setDeleteConfirmationOpen(true)}
+                                        className="bg-destructive/90 hover:bg-destructive"
+                                    >
+                                        Delete team
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Modal delete confirmation */}
+                <DeleteConfirmation
+                    isOpen={deleteConfirmationOpen}
+                    setIsOpen={setDeleteConfirmationOpen}
+                    teamName={team.name}
+                    confirmationCode={team.hashid}
+                />
             </div>
         </AppLayout>
     );

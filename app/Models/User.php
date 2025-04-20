@@ -61,106 +61,120 @@ class User extends Authenticatable implements LaratrustUser
         return $this->belongsTo(Team::class, 'current_team_id');
     }
 
-     // Team management methods
-     public function setDefaultTeam($teamId)
-     {
-         // Validasi team
-         if (!$this->hasAccessToTeam($teamId)) {
-             throw new \Exception('User tidak memiliki akses ke team ini');
-         }
+    // Team management methods
+    public function setDefaultTeam($teamId)
+    {
+        // Validasi team
+        if (!$this->hasAccessToTeam($teamId)) {
+            throw new \Exception('User tidak memiliki akses ke team ini');
+        }
 
-         $this->default_team_id = $teamId;
+        $this->default_team_id = $teamId;
 
-         // Jika belum ada current team, set default sebagai current juga
-         if (!$this->current_team_id) {
-             $this->current_team_id = $teamId;
-         }
+        // Jika belum ada current team, set default sebagai current juga
+        if (!$this->current_team_id) {
+            $this->current_team_id = $teamId;
+        }
 
-         $this->save();
+        $this->save();
 
-         // Update session juga
-         session(['current_team_id' => $teamId]);
+        // Update session juga
+        session(['current_team_id' => $teamId]);
 
-         return $this;
-     }
+        return $this;
+    }
 
-     public function setCurrentTeam($teamId)
-     {
-         // Validasi team
-         if (!$this->hasAccessToTeam($teamId)) {
-             throw new \Exception('User tidak memiliki akses ke team ini');
-         }
+    public function setCurrentTeam($teamId)
+    {
+        // Validasi team
+        if (!$this->hasAccessToTeam($teamId)) {
+            throw new \Exception('User tidak memiliki akses ke team ini');
+        }
 
-         $this->current_team_id = $teamId;
-         $this->save();
+        $this->current_team_id = $teamId;
+        $this->save();
 
-         // Update session juga
-         session(['current_team_id' => $teamId]);
+        // Update session juga
+        session(['current_team_id' => $teamId]);
 
-         return $this;
-     }
+        return $this;
+    }
 
-     public function switchTeamSession($teamId)
-     {
-         // Validasi team
-         if (!$this->hasAccessToTeam($teamId)) {
-             throw new \Exception('User tidak memiliki akses ke team ini');
-         }
+    public function switchTeamSession($teamId)
+    {
+        // Validasi team
+        if (!$this->hasAccessToTeam($teamId)) {
+            throw new \Exception('User tidak memiliki akses ke team ini');
+        }
 
-         // Hanya update session, tidak update database
-         session(['current_team_id' => $teamId]);
+        // Hanya update session, tidak update database
+        session(['current_team_id' => $teamId]);
 
-         return $this;
-     }
+        return $this;
+    }
 
-     public function getCurrentTeamId()
-     {
-         // Prioritaskan team dari session
-         $teamId = session('current_team_id');
+    public function getCurrentTeamId()
+    {
+        // Prioritaskan team dari session
+        $teamId = session('current_team_id');
 
-         // Jika tidak ada di session, gunakan current_team_id dari database
-         if (!$teamId) {
-             $teamId = $this->current_team_id;
+        // Jika tidak ada di session, gunakan current_team_id dari database
+        if (!$teamId) {
+            $teamId = $this->current_team_id;
 
-             // Jika current_team_id juga tidak ada, gunakan default_team_id
-             if (!$teamId) {
-                 $teamId = $this->default_team_id;
-             }
+            // jika default_team_id tidak ada, jadikan team lain sebagai default
+            if (!$this->default_team_id) {
+                $role = $this->roles()->where('name', 'owner')->first();
+                $team = $this->rolesTeams()->wherePivot('role_id', $role->id)->first();
+                $this->default_team_id = $team->id;
+                $this->save();
 
-             // Jika ditemukan team ID dari database, update session
-             if ($teamId) {
-                 session(['current_team_id' => $teamId]);
-             }
-         }
+                $teamId = $team->id;
+            }
 
-         return $teamId;
-     }
+            // Jika current_team_id juga tidak ada, gunakan default_team_id
+            if (!$teamId) {
+                $teamId = $this->default_team_id;
+            }
 
-     public function currentTeam()
-     {
-         $teamId = $this->getCurrentTeamId();
+            // Jika ditemukan team ID dari database, update session
+            if ($teamId) {
+                session(['current_team_id' => $teamId]);
 
-         if ($teamId) {
-             return Team::find($teamId);
-         }
+                //  update current team id
+                $this->current_team_id = $this->default_team_id;
+                $this->save();
+            }
+        }
 
-         return null;
-     }
+        return $teamId;
+    }
 
-     public function resetTeamSession()
-     {
-         // Reset session ke nilai database
-         session(['current_team_id' => $this->current_team_id]);
+    public function currentTeam()
+    {
+        $teamId = $this->getCurrentTeamId();
 
-         return $this;
-     }
+        if ($teamId) {
+            return Team::find($teamId);
+        }
 
-     public function hasAccessToTeam($teamId)
-     {
-         return DB::table('role_user')
-             ->where('user_id', $this->id)
-             ->where('user_type', get_class($this))
-             ->where('team_id', $teamId)
-             ->exists();
-     }
+        return null;
+    }
+
+    public function resetTeamSession()
+    {
+        // Reset session ke nilai database
+        session(['current_team_id' => $this->current_team_id]);
+
+        return $this;
+    }
+
+    public function hasAccessToTeam($teamId)
+    {
+        return DB::table('role_user')
+            ->where('user_id', $this->id)
+            ->where('user_type', get_class($this))
+            ->where('team_id', $teamId)
+            ->exists();
+    }
 }

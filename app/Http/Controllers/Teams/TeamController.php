@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Teams;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Teams\DestroyTeamRequest;
 use App\Models\Role;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class TeamController extends Controller
@@ -78,10 +80,27 @@ class TeamController extends Controller
 
         try {
             // session-only switching untuk perpindahan sementara
-            $user->switchTeamSession($teamId);
+            $user->setCurrentTeam($teamId);
             return redirect()->back()->with('success', 'Berhasil beralih team');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
+        }
+    }
+
+    public function destroy(Team $team, DestroyTeamRequest $request)
+    {
+        DB::beginTransaction();
+        try {
+            $team->delete();
+            session()->forget('current_team_id');
+
+            DB::commit();
+
+            return redirect()->route('teams.index')->with('success', 'Team deleted successfully.');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            return back()->with('error', $th->getMessage());
         }
     }
 }
