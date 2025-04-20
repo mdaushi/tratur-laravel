@@ -99,16 +99,16 @@ export default function General({ team }: GeneralProps) {
                     </form>
                 </Card>
 
-                <Card className="border-1 border-red-400">
-                    <CardHeader>
+                <Card className="bg-red-50 dark:bg-red-700/10">
+                    <CardHeader className="text-red-600 dark:text-red-100">
                         <CardTitle>DANGER ZONE</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="flex items-start gap-4">
                             <AlertTriangle className="text-destructive h-5 w-5" />
                             <div className="space-y-2">
-                                <p className="text-foreground text-sm">Deleting this team will also remove its projects</p>
-                                <p className="text-muted-foreground text-sm">
+                                <p className="text-sm text-red-600 dark:text-red-100">Deleting this team will also remove its projects</p>
+                                <p className="atext-sm text-red-600 dark:text-red-100">
                                     Make sure you have made a backup of your projects if you want to keep your data
                                 </p>
                                 <div className="pt-2">
