@@ -11,8 +11,18 @@ class MemberController extends Controller
 {
     public function edit(Team $team)
     {
+        $members = $team->members->map(function ($member) {
+            return [
+                'id' => $member->id,
+                'name' => $member->name,
+                'email' => $member->email,
+                'role' => $member->roles()->pluck('name')
+            ];
+        });
+
         return Inertia::render('teams/member', [
-            'team' => $team
+            'team' => $team,
+            'members' => $members
         ]);
     }
 }

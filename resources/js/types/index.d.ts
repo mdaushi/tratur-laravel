@@ -77,5 +77,5 @@ export interface Member {
     email: string;
     avatar?: string;
     role: string;
-    status: 'Active' | 'Pending' | 'Suspended';
+    // status: 'Active' | 'Pending' | 'Suspended';
 }
