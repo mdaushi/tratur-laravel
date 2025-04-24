@@ -39,8 +39,8 @@ export function TeamSwitcher() {
                                 <Command className="size-4" />
                             </div>
                             <div className="grid flex-1 text-left text-sm leading-tight">
-                                <span className="truncate font-semibold capitalize">{current_team.name}</span>
-                                <span className="truncate text-xs">{current_team.description}</span>
+                                <span className="truncate font-semibold capitalize">{current_team?.name || 'No Team'}</span>
+                                <span className="truncate text-xs">{current_team?.description || 'No Description'}</span>
                             </div>
                             <ChevronsUpDown className="ml-auto" />
                         </SidebarMenuButton>
