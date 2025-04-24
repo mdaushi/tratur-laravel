@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Laratrust\Contracts\LaratrustUser;
 use Laratrust\Traits\HasRolesAndPermissions;
 
-class User extends Authenticatable implements LaratrustUser
+class User extends Authenticatable implements LaratrustUser, MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRolesAndPermissions;
@@ -115,6 +115,11 @@ class User extends Authenticatable implements LaratrustUser
 
     public function getCurrentTeamId()
     {
+        // Check if the user has any associated teams
+        if (!$this->rolesTeams()->exists()) {
+            return null;
+        }
+
         // Prioritaskan team dari session
         $teamId = session('current_team_id');
 
@@ -152,13 +157,16 @@ class User extends Authenticatable implements LaratrustUser
 
     public function currentTeam()
     {
-        $teamId = $this->getCurrentTeamId();
-
-        if ($teamId) {
-            return Team::find($teamId);
+        // Check if the user has any associated teams
+        if (!$this->rolesTeams()->exists()) {
+            return null;
         }
 
-        return null;
+        // Get the current team ID
+        $teamId = $this->getCurrentTeamId();
+
+        // Return the team if the ID exists, otherwise return null
+        return $teamId ? Team::find($teamId) : null;
     }
 
     public function resetTeamSession()
