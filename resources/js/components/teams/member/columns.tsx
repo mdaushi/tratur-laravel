@@ -1,3 +1,4 @@
+import { Badge } from '@/components/ui/badge';
 import { Member } from '@/types';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTableRowActions } from './data-table-row-action';
@@ -14,7 +15,11 @@ export const columns: ColumnDef<Member>[] = [
     {
         accessorKey: 'role',
         header: 'Role',
-        cell: ({ row }) => <span className="capitalize">{row.getValue('role')}</span>,
+        cell: ({ row }) => (
+            <span className="capitalize">
+                <Badge variant="outline">{row.getValue('role')}</Badge>
+            </span>
+        ),
     },
     {
         id: 'actions',
