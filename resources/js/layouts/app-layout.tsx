@@ -1,3 +1,4 @@
+import { useIsMobile } from '@/hooks/use-mobile';
 import useFlashToast from '@/hooks/useFlashToast';
 import AppLayoutTemplate from '@/layouts/app/app-sidebar-layout';
 import { type BreadcrumbItem } from '@/types';
@@ -12,10 +13,12 @@ interface AppLayoutProps {
 export default ({ children, breadcrumbs, ...props }: AppLayoutProps) => {
     useFlashToast();
 
+    const isMobile = useIsMobile();
+
     return (
         <AppLayoutTemplate breadcrumbs={breadcrumbs} {...props}>
             {children}
-            <Toaster position="bottom-center" />
+            <Toaster position={isMobile ? 'top-right' : 'bottom-center'} />
         </AppLayoutTemplate>
     );
 };
