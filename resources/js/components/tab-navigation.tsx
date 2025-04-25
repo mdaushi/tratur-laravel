@@ -15,7 +15,7 @@ interface TabNavigationProps {
 }
 export function TabNavigation({ tabs, activeTab, className }: TabNavigationProps) {
     return (
-        <Tabs value={activeTab} className={cn('w-full', className)}>
+        <Tabs value={activeTab} className={cn('mb-3 w-full', className)}>
             <TabsList>
                 {tabs.map((tab) => (
                     <Link href={tab.href} key={tab.value} className="w-full">

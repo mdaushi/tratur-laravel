@@ -35,6 +35,7 @@ export interface SharedData {
         info: string;
         warning: string;
     };
+    modal: ModalRoute;
     [key: string]: unknown;
 }
 
@@ -79,3 +80,5 @@ export interface Member {
     role: string;
     // status: 'Active' | 'Pending' | 'Suspended';
 }
+
+export type ModalRoute = 'create' | 'edit' | null;

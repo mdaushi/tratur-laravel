@@ -10,7 +10,7 @@ export function getTeamSettingsTabs(teamId: string): TabItem[] {
         {
             label: 'Member',
             value: 'member',
-            href: route('teams.member.edit', teamId),
+            href: route('teams.members.index', teamId),
         },
     ];
 }

@@ -1,5 +1,6 @@
 import { Member } from '@/types';
 import { ColumnDef } from '@tanstack/react-table';
+import { DataTableRowActions } from './data-table-row-action';
 
 export const columns: ColumnDef<Member>[] = [
     {
@@ -14,5 +15,9 @@ export const columns: ColumnDef<Member>[] = [
         accessorKey: 'role',
         header: 'Role',
         cell: ({ row }) => <span className="capitalize">{row.getValue('role')}</span>,
+    },
+    {
+        id: 'actions',
+        cell: ({ row }) => <DataTableRowActions row={row} />,
     },
 ];
