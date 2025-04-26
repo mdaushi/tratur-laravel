@@ -12,6 +12,7 @@ import { SharedData } from '@/types';
 import { MemberFormType } from '@/types/forms/member';
 import { usePage } from '@inertiajs/react';
 import { useForm } from 'laravel-precognition-react-inertia';
+import { LoaderCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { FormMember } from './form';
 
@@ -54,7 +55,8 @@ export function MemberActions({ onClose }: MemberActionsProps) {
                     <FormMember handler={handleSubmit} form={form} />
                 </CredenzaBody>
                 <CredenzaFooter>
-                    <Button form="form-invite-member" className="w-full cursor-pointer">
+                    <Button form="form-invite-member" className="w-full cursor-pointer" disabled={form.processing}>
+                        {form.processing && <LoaderCircle className="size-4 animate-spin" />}
                         Send Invitation
                     </Button>
                 </CredenzaFooter>

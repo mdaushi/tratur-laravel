@@ -78,7 +78,9 @@ export interface Member {
     email: string;
     avatar?: string;
     role: string;
-    // status: 'Active' | 'Pending' | 'Suspended';
+    status: MemberStatus;
 }
+
+export type MemberStatus = 'pending' | 'accepted' | 'declined';
 
 export type ModalRoute = 'create' | 'edit' | null;

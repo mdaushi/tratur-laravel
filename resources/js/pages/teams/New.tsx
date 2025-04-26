@@ -6,6 +6,7 @@ import FocusHeaderLayout from '@/layouts/other/focus-header-layout';
 import { Head } from '@inertiajs/react';
 import { useForm } from 'laravel-precognition-react-inertia';
 import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function NewTeam() {
     const form = useForm('post', route('new.store'), {
@@ -19,6 +20,11 @@ export default function NewTeam() {
             preserveScroll: true,
             onSuccess: () => {
                 form.reset();
+            },
+            onError: (errors) => {
+                if (Object.keys(errors)[0] === 'error') {
+                    toast.error(errors.error[0]);
+                }
             },
         });
     };

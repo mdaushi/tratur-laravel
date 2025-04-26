@@ -2,13 +2,21 @@
 
 namespace App\Models;
 
+use App\Enums\InvitationStatus;
+use BackedEnum;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Laratrust\Contracts\LaratrustUser;
 use Laratrust\Traits\HasRolesAndPermissions;
+use Ramsey\Uuid\UuidInterface;
+use Illuminate\Support\Str;
+use Laratrust\Helper;
 
 class User extends Authenticatable implements LaratrustUser, MustVerifyEmail
 {
@@ -127,9 +135,10 @@ class User extends Authenticatable implements LaratrustUser, MustVerifyEmail
         if (!$teamId) {
             $teamId = $this->current_team_id;
 
+            $role = $this->roles()->where('name', 'owner')->first();
+
             // jika default_team_id tidak ada, jadikan team lain sebagai default
-            if (!$this->default_team_id) {
-                $role = $this->roles()->where('name', 'owner')->first();
+            if (!$this->default_team_id && $role) {
                 $team = $this->rolesTeams()->wherePivot('role_id', $role->id)->first();
                 $this->default_team_id = $team->id;
                 $this->save();
@@ -184,5 +193,39 @@ class User extends Authenticatable implements LaratrustUser, MustVerifyEmail
             ->where('user_type', get_class($this))
             ->where('team_id', $teamId)
             ->exists();
+    }
+
+    public function addRoleWithStatus(
+        array|string|int|Model|UuidInterface|BackedEnum $role,
+        mixed $team = null,
+        $status = InvitationStatus::PENDING
+    ) {
+        $objectType = Str::singular('roles');
+        $object = Helper::getIdFor($role, $objectType);
+        $this->addRole($role, $team);
+
+        $this->roles()
+            ->wherePivot(Team::modelForeignKey(), $team)
+            ->updateExistingPivot($object, [
+                'status' => $status,
+            ]);
+
+        return $this;
+    }
+
+    public function rolesTeams(): ?MorphToMany
+    {
+        if (! Config::get('laratrust.teams.enabled')) {
+            return null;
+        }
+
+        return $this->morphToMany(
+            Config::get('laratrust.models.team'),
+            'user',
+            Config::get('laratrust.tables.role_user'),
+            Config::get('laratrust.foreign_keys.user'),
+            Config::get('laratrust.foreign_keys.team')
+        )
+            ->withPivot(Config::get('laratrust.foreign_keys.role'))->wherePivot('status', InvitationStatus::ACCEPTED);
     }
 }

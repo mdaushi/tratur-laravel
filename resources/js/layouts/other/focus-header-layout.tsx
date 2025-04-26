@@ -4,8 +4,10 @@ import { Breadcrumbs } from '@/components/breadcrumbs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Toaster } from '@/components/ui/sonner';
 import { UserMenuContent } from '@/components/user-menu-content';
 import { useInitials } from '@/hooks/use-initials';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { BreadcrumbItem, SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { ArrowLeft } from 'lucide-react';
@@ -19,6 +21,8 @@ export default function FocusHeaderLayout({ children, breadcrumbs = [] }: FocusH
     const page = usePage<SharedData>();
     const { auth } = page.props;
     const getInitials = useInitials();
+
+    const isMobile = useIsMobile();
 
     return (
         <>
@@ -59,6 +63,7 @@ export default function FocusHeaderLayout({ children, breadcrumbs = [] }: FocusH
                 </div>
             )}
             <AppContent>{children}</AppContent>
+            <Toaster position={isMobile ? 'top-right' : 'bottom-center'} />
         </>
     );
 }

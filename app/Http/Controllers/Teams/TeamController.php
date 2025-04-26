@@ -74,7 +74,7 @@ class TeamController extends Controller
         return to_route("teams.general.edit", [$team->hashid]);
     }
 
-    public function switchTeam(Request $request, $teamId)
+    public function switch(Request $request, $teamId)
     {
         $user = $request->user();
 

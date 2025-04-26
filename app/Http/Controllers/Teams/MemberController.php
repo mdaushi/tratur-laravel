@@ -10,6 +10,7 @@ use App\Models\Team;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class MemberController extends Controller
@@ -21,7 +22,8 @@ class MemberController extends Controller
                 'id' => $member->id,
                 'name' => $member->name,
                 'email' => $member->email,
-                'role' => $member->roles()->pluck('name')
+                'role' => $member->roles()->pluck('name'),
+                'status' => $member->pivot->status
             ];
         });
     }
@@ -63,7 +65,7 @@ class MemberController extends Controller
                 return back()->withErrors('user not found', 'error');
             }
 
-            $user->addRole($request->role_id, $team);
+            $user->addRoleWithStatus($request->role_id, $team->id);
 
             DB::commit();
 
@@ -71,8 +73,9 @@ class MemberController extends Controller
         } catch (\Throwable $th) {
             DB::rollBack();
 
+            Log::error('failed to add member: ', [$th->getMessage()]);
+
             return back()->withErrors('Failed to invite member', 'error');
         }
     }
-
 }
