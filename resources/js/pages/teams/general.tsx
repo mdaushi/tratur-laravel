@@ -21,8 +21,6 @@ interface GeneralProps {
 export default function General({ team }: GeneralProps) {
     const { permissions } = usePage<SharedData>().props;
 
-    console.log(permissions);
-
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: 'Teams',
