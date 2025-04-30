@@ -7,8 +7,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { getTeamSettingsTabs } from '@/config/teams/tabs-team-settings';
 import AppLayout from '@/layouts/app-layout';
-import { BreadcrumbItem, Team } from '@/types';
-import { Head } from '@inertiajs/react';
+import { can } from '@/lib/utils';
+import { BreadcrumbItem, SharedData, Team } from '@/types';
+import { Head, usePage } from '@inertiajs/react';
 import { useForm } from 'laravel-precognition-react-inertia';
 import { AlertTriangle, Loader2 } from 'lucide-react';
 import { FormEvent, useState } from 'react';
@@ -18,6 +19,10 @@ interface GeneralProps {
 }
 
 export default function General({ team }: GeneralProps) {
+    const { permissions } = usePage<SharedData>().props;
+
+    console.log(permissions);
+
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: 'Teams',
@@ -87,51 +92,57 @@ export default function General({ team }: GeneralProps) {
                                 </div>
                             </div>
                         </CardContent>
-                        <CardFooter className="flex items-center justify-end gap-2 pt-4">
-                            <Button variant="secondary" type="button" onClick={cancelSubmit} disabled={team.name === form.data.name}>
-                                Cancel
-                            </Button>
-                            <Button type="submit" disabled={form.processing || team.name === form.data.name}>
-                                {form.processing && <Loader2 className="mr-1 animate-spin" />}
-                                Save
-                            </Button>
-                        </CardFooter>
+                        {can('teams-update', permissions) && (
+                            <CardFooter className="flex items-center justify-end gap-2 pt-4">
+                                <Button variant="secondary" type="button" onClick={cancelSubmit} disabled={team.name === form.data.name}>
+                                    Cancel
+                                </Button>
+                                <Button type="submit" disabled={form.processing || team.name === form.data.name}>
+                                    {form.processing && <Loader2 className="mr-1 animate-spin" />}
+                                    Save
+                                </Button>
+                            </CardFooter>
+                        )}
                     </form>
                 </Card>
 
-                <Card className="bg-red-50 dark:bg-red-700/10">
-                    <CardHeader className="text-red-600 dark:text-red-100">
-                        <CardTitle>DANGER ZONE</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="flex items-start gap-4">
-                            <AlertTriangle className="text-destructive h-5 w-5" />
-                            <div className="space-y-2">
-                                <p className="text-sm text-red-600 dark:text-red-100">Deleting this team will also remove its projects</p>
-                                <p className="atext-sm text-red-600 dark:text-red-100">
-                                    Make sure you have made a backup of your projects if you want to keep your data
-                                </p>
-                                <div className="pt-2">
-                                    <Button
-                                        variant="destructive"
-                                        onClick={() => setDeleteConfirmationOpen(true)}
-                                        className="bg-destructive/90 hover:bg-destructive"
-                                    >
-                                        Delete team
-                                    </Button>
+                {can('teams-delete', permissions) && (
+                    <>
+                        <Card className="bg-red-50 dark:bg-red-700/10">
+                            <CardHeader className="text-red-600 dark:text-red-100">
+                                <CardTitle>DANGER ZONE</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="flex items-start gap-4">
+                                    <AlertTriangle className="text-destructive h-5 w-5" />
+                                    <div className="space-y-2">
+                                        <p className="text-sm text-red-600 dark:text-red-100">Deleting this team will also remove its projects</p>
+                                        <p className="atext-sm text-red-600 dark:text-red-100">
+                                            Make sure you have made a backup of your projects if you want to keep your data
+                                        </p>
+                                        <div className="pt-2">
+                                            <Button
+                                                variant="destructive"
+                                                onClick={() => setDeleteConfirmationOpen(true)}
+                                                className="bg-destructive/90 hover:bg-destructive"
+                                            >
+                                                Delete team
+                                            </Button>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
+                            </CardContent>
+                        </Card>
 
-                {/* Modal delete confirmation */}
-                <DeleteConfirmation
-                    isOpen={deleteConfirmationOpen}
-                    setIsOpen={setDeleteConfirmationOpen}
-                    teamName={team.name}
-                    confirmationCode={team.hashid}
-                />
+                        {/* Modal delete confirmation */}
+                        <DeleteConfirmation
+                            isOpen={deleteConfirmationOpen}
+                            setIsOpen={setDeleteConfirmationOpen}
+                            teamName={team.name}
+                            confirmationCode={team.hashid}
+                        />
+                    </>
+                )}
             </div>
         </AppLayout>
     );

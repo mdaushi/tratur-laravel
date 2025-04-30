@@ -14,7 +14,7 @@ Route::get('/', function () {
 Route::prefix('/dashboard')->middleware(['auth', 'verified'])->group(function () {
     Route::resource('/new', NewTeamController::class)
         ->only('index', 'store')
-        ->middleware([HandlePrecognitiveRequests::class]);
+        ->middleware([HandlePrecognitiveRequests::class,'can:create,App\Models\Team']);
 });
 
 // Route yang membutuhkan user sudah punya tim

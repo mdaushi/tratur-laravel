@@ -10,12 +10,17 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
 class TeamController extends Controller
 {
     public function index()
     {
+        if (!Gate::allows('view', 'App\Models\team')) {
+            return back()->with('error', 'This action is unauthorized.');
+        }
+
         $user = Auth::user();
 
         $teams = $user->rolesTeams()->get();
@@ -89,6 +94,10 @@ class TeamController extends Controller
 
     public function destroy(Team $team, DestroyTeamRequest $request)
     {
+        if (!Gate::allows('delete', $team)) {
+            return back()->with('error', 'This action is unauthorized.');
+        }
+
         DB::beginTransaction();
         try {
             $team->delete();

@@ -15,7 +15,7 @@ class PermissionsSeeder extends Seeder
     {
         $modules = ['products','teams'];
 
-        $actions = ['view', 'create', 'edit', 'delete'];
+        $actions = ['viewAny','view', 'create', 'update', 'delete', 'restore', 'forceDelete'];
 
         foreach ($modules as $module) {
             $module = strtolower($module);

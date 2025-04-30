@@ -49,6 +49,9 @@ class HandleInertiaRequests extends Middleware
                     'all' => $request->user()?->rolesTeams()->select('id', 'name')->get(),
                     'current' => $request->user()?->currentTeam()
                 ],
+                'can' => [
+                    'teams-view' => $request->user()?->can('view', 'App\Models\Team')
+                ],
             ],
             'ziggy' => fn(): array => [
                 ...(new Ziggy)->toArray(),

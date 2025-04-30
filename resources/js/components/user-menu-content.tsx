@@ -1,8 +1,9 @@
 import { DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { UserInfo } from '@/components/user-info';
 import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
-import { type User } from '@/types';
-import { Link } from '@inertiajs/react';
+import { can } from '@/lib/utils';
+import { SharedData, type User } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
 import { LogOut, Settings, Users } from 'lucide-react';
 
 interface UserMenuContentProps {
@@ -11,6 +12,7 @@ interface UserMenuContentProps {
 
 export function UserMenuContent({ user }: UserMenuContentProps) {
     const cleanup = useMobileNavigation();
+    const { auth } = usePage<SharedData>().props;
 
     return (
         <>
@@ -27,12 +29,14 @@ export function UserMenuContent({ user }: UserMenuContentProps) {
                         Settings
                     </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                    <Link className="block w-full" href={route('teams.index')} as="button" prefetch onClick={cleanup}>
-                        <Users className="mr-2" />
-                        Teams
-                    </Link>
-                </DropdownMenuItem>
+                {can('teams-view', auth.can) && (
+                    <DropdownMenuItem asChild>
+                        <Link className="block w-full" href={route('teams.index')} as="button" onClick={cleanup}>
+                            <Users className="mr-2" />
+                            Teams
+                        </Link>
+                    </DropdownMenuItem>
+                )}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
