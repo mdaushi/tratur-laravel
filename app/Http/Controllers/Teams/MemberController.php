@@ -18,12 +18,12 @@ class MemberController extends Controller
 {
     private function getMembers($team)
     {
-        return $team->members->map(function ($member) {
+        return $team->members->map(function ($member) use ($team) {
             return [
                 'id' => $member->id,
                 'name' => $member->name,
                 'email' => $member->email,
-                'role' => $member->roles()->pluck('name'),
+                'role' => $member->roles()->wherePivot('team_id', $team->id)->pluck('name'),
                 'status' => $member->pivot->status
             ];
         });
@@ -33,12 +33,9 @@ class MemberController extends Controller
     {
         $members = $this->getMembers($team);
 
-        $roles = Role::select('id', 'name')->get();
-
         return Inertia::render('teams/member', [
             'team' => $team,
             'members' => $members,
-            'roles' => $roles,
             'modal' => null,
             'permissions' => [
                 'teams-member-create' => request()->user()->can('createMember', $team)

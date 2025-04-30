@@ -37,15 +37,15 @@ class TeamPolicy
      */
     public function update(User $user, Team $team): bool
     {
-        return $user->isAbleTo('teams-update') && $user->hasRole('owner', $user->currentTeam());
+        return $user->isAbleTo('teams-update') && $user->hasRole('owner', $team);
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user): bool
+    public function delete(User $user, Team $team): bool
     {
-        return $user->isAbleTo('teams-delete') && $user->hasRole('owner', $user->currentTeam());
+        return $user->isAbleTo('teams-delete') && $user->hasRole('owner', $team);
     }
 
     /**
@@ -64,8 +64,8 @@ class TeamPolicy
         return false;
     }
 
-    public function createMember(User $user): bool
+    public function createMember(User $user, Team $team): bool
     {
-        return $user->hasRole('owner', $user->currentTeam());
+        return $user->hasRole('owner', $team);
     }
 }
