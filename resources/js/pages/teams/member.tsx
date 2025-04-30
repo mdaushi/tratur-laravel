@@ -7,16 +7,18 @@ import { Button } from '@/components/ui/button';
 import { getTeamSettingsTabs } from '@/config/teams/tabs-team-settings';
 import { useModalRoute } from '@/hooks/use-modal-route';
 import AppLayout from '@/layouts/app-layout';
-import { BreadcrumbItem, Member as MemberType, Team } from '@/types';
+import { can } from '@/lib/utils';
+import { Accessible, BreadcrumbItem, Member as MemberType, Team } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { IconPlus } from '@tabler/icons-react';
 
 interface MemberProps {
     team: Team;
     members: MemberType[];
+    permissions: Accessible;
 }
 
-export default function Member({ team, members }: MemberProps) {
+export default function Member({ team, members, permissions }: MemberProps) {
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: 'Teams',
@@ -40,12 +42,14 @@ export default function Member({ team, members }: MemberProps) {
 
                 <div className="mb-3 flex items-center justify-between">
                     <TabNavigation tabs={tabs} activeTab="member" className="mb-0" />
-                    <Link href={route('teams.members.create', team.hashid)}>
-                        <Button variant="outline" size="sm">
-                            <IconPlus />
-                            <span className="hidden lg:inline">Invite member</span>
-                        </Button>
-                    </Link>
+                    {can('teams-member-create', permissions) && (
+                        <Link href={route('teams.members.create', team.hashid)}>
+                            <Button variant="outline" size="sm">
+                                <IconPlus />
+                                <span className="hidden lg:inline">Invite member</span>
+                            </Button>
+                        </Link>
+                    )}
                 </div>
 
                 <DataTable data={members} columns={columns} />

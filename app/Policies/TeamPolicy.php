@@ -63,4 +63,9 @@ class TeamPolicy
     {
         return false;
     }
+
+    public function createMember(User $user): bool
+    {
+        return $user->hasRole('owner', $user->currentTeam());
+    }
 }

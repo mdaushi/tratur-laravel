@@ -10,6 +10,7 @@ use App\Models\Team;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
@@ -38,12 +39,19 @@ class MemberController extends Controller
             'team' => $team,
             'members' => $members,
             'roles' => $roles,
-            'modal' => null
+            'modal' => null,
+            'permissions' => [
+                'teams-member-create' => request()->user()->can('createMember', $team)
+            ]
         ]);
     }
 
     public function create(Team $team)
     {
+        if (! Gate::allows('createMember', $team)) {
+            return back()->with('error', 'This action is unauthorized.');
+        }
+
         $roles = Role::select('id', 'name')->get();
 
         return Inertia::render('teams/member', [
@@ -51,6 +59,9 @@ class MemberController extends Controller
             'members' => $this->getMembers($team),
             'roles' => $roles,
             'modal' => ModalRoute::Create,
+            'permissions' => [
+                'teams-member-create' => request()->user()->can('createMember', $team)
+            ]
         ]);
     }
 

@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\Team;
 use App\Models\User;
+use App\Policies\MemberTeamPolicy;
+use App\Policies\TeamPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -24,5 +27,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('viewPulse', function (User $user) {
             return $user;
         });
+
+        Gate::policy(Team::class, TeamPolicy::class);
     }
 }

@@ -4,9 +4,7 @@ import type { Config } from 'ziggy-js';
 export interface Auth {
     user: User;
     teams: { all: TeamBase[]; current: TeamBase };
-    can: {
-        [key: string]: boolean;
-    };
+    can: Accessible;
 }
 
 export interface BreadcrumbItem {
@@ -40,9 +38,11 @@ export interface SharedData {
     };
     modal: ModalRoute;
     [key: string]: unknown;
-    permissions: {
-        [key: string]: boolean;
-    };
+    permissions: Accessible;
+}
+
+export interface Accessible {
+    [key: string]: boolean;
 }
 
 export interface User {
